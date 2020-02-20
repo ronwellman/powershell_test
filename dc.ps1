@@ -1,6 +1,6 @@
-Start-Transcript c:\ConfigurationLog.txt
-
 param ($ComputerName, $DomainFqdn, $DomainNetBIOS, $Password, $DomainAdminUser, $DomainAdminUserDisplayName, $DNSClientInterfaceAlias, $DNSIP, $DnsForwarderIPs)
+
+Start-Transcript c:\ConfigurationLog.txt
 
 Write-Output "Creating ConfigData"
 $ConfigData = @{
