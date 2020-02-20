@@ -1,3 +1,27 @@
+Start-Transcript c:\ConfigurationLog.txt
+
+param ($ComputerName, $DomainFqdn, $DomainNetBIOS, $Password, $DomainAdminUser, $DomainAdminUserDisplayName, $DNSClientInterfaceAlias, $DNSIP, $DnsForwarderIPs)
+
+Write-Output "Creating ConfigData"
+$ConfigData = @{
+    AllNodes = @(@{
+        NodeName = "localhost"
+        MachineName = $ComputerName
+        DomainFqdn = $DomainFqdn
+        DomainNetbios = $DomainNetBIOS
+        Password = $Password
+        DomainAdminUser = $DomainAdminUser
+        DomainAdminUserDisplayName = $DomainAdminUserDisplayName
+        DNSClientInterfaceAlias = $DNSClientInterfaceAlias
+        DNSIP = $DNSIP
+        DnsForwarders = $DnsForwarderIPs
+        # DO NOT USE the below in production. Lab only!
+        PsDscAllowPlainTextPassword = $true
+        PSDscAllowDomainUser = $true
+    })
+}
+
+Write-Output "Defining Configuration"
 Configuration DC {
 
     Import-DscResource -ModuleName xComputerManagement -Name xComputer
@@ -129,3 +153,9 @@ Configuration DC {
         }
     }
 }
+
+Write-Output "Generating MOF"
+DC -ConfigurationData $ConfigData
+
+Write-Output "Applying Configuration"
+Start-DscConfiguration -Wait -Force -Path .\DC -Verbose
