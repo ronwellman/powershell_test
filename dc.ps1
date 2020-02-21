@@ -22,7 +22,7 @@ $ConfigData = @{
 }
 
 $localCredential = New-Object System.Management.Automation.PSCredential(
-            'Administrator', (ConvertTo-SecureString $Node.Password -AsplainText -Force))
+            'Administrator', (ConvertTo-SecureString $Password -AsplainText -Force))
 
 
 
