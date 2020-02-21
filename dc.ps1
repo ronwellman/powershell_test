@@ -90,7 +90,6 @@ Configuration DC {
             DomainNetbiosName = $node.DomainNetBIOS
             DomainAdministratorCredential = $Credential
             SafemodeAdministratorPassword = $Credential
-            Credential = $Credential
             DependsOn = '[xComputer]SetName', '[WindowsFeature]ADDSInstall'
         }
 
