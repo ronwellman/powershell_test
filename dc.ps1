@@ -31,6 +31,7 @@ Configuration DC {
     Import-DSCResource -ModuleName xActiveDirectory -Name xADDomain
     Import-DSCResource -ModuleName xActiveDirectory -Name xADUser
     Import-DSCResource -ModuleName xActiveDirectory -Name xADGroup
+    Import-DSCResource -ModuleName xAdcsDeployment -Name xAdcsWebEnrollment
     Import-DSCResource -ModuleName xAdcsDeployment -Name xAdcsCertificationAuthority
 
     Node $AllNodes.NodeName {
