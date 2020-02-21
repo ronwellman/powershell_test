@@ -35,7 +35,7 @@ Configuration DC {
     Import-DSCResource -ModuleName xNetworking -Name xDnsServerAddress
     Import-DSCResource -ModuleName xDNSServer -Name xDnsServerForwarder
     Import-DSCResource -ModuleName xDNSServer -Name xDnsRecord
-    Import-DscResource -ModuleName xDNSServer -Name xDnsServerADZone
+    Import-DscResource -ModuleName xDNSServer -Name xDnsServerPrimaryZone
     Import-DSCResource -ModuleName xActiveDirectory -Name xADDomain
     Import-DSCResource -ModuleName xActiveDirectory -Name xADUser
     Import-DSCResource -ModuleName xActiveDirectory -Name xADGroup
@@ -102,9 +102,9 @@ Configuration DC {
         # }
 
         # Create a Zone for the domain
-        xDnsServerADZone adzone {
+        xDnsServerPrimaryZone primaryZone {
             Name = $node.DomainFqdn
-            ReplicationScope = 'Domain'
+            Ensure = 'Present'
             DependsOn = '[WindowsFeature]DNS'
         }
 
@@ -115,7 +115,7 @@ Configuration DC {
             Target = $Node.DNSIP
             Type = 'ARecord'
             Ensure = 'Present'
-            DependsOn = '[WindowsFeature]DNS', '[xDnsServerADZone]adzone'
+            DependsOn = '[WindowsFeature]DNS', '[xDnsServerADZone]primaryZone'
         }
 
         # # Ensure the AD CS role is installed
