@@ -64,12 +64,12 @@ Configuration DC {
         #     DependsOn = '[WindowsFeature]DNS'
         # }
         
-        # # Make sure AD DS is installed
-        # WindowsFeature ADDSInstall {
-        #     Ensure = 'Present'
-        #     Name   = 'AD-Domain-Services'
-        #     DependsOn = '[WindowsFeature]DNS'
-        # }
+        # Make sure AD DS is installed
+        WindowsFeature ADDSInstall {
+            Ensure = 'Present'
+            Name   = 'AD-Domain-Services'
+            DependsOn = '[WindowsFeature]DNS'
+        }
 
         # # Make sure AD DS Tools are installed
         # WindowsFeature ADDSTools {
