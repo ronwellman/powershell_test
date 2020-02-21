@@ -80,6 +80,7 @@ Configuration DC {
         WindowsFeature DNS {
             Ensure = 'Present'
             Name   = 'DNS'
+            Credential = $localCredential
         }
 
         # # Create the Active Directory domain
