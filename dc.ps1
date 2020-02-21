@@ -65,11 +65,11 @@ Configuration DC {
         # }
         
         # Make sure AD DS is installed
-        WindowsFeature ADDSInstall {
-            Ensure = 'Present'
-            Name   = 'AD-Domain-Services'
-            DependsOn = '[WindowsFeature]DNS'
-        }
+        # WindowsFeature ADDSInstall {
+        #     Ensure = 'Present'
+        #     Name   = 'AD-Domain-Services'
+        #     DependsOn = '[WindowsFeature]DNS'
+        # }
 
         # # Make sure AD DS Tools are installed
         # WindowsFeature ADDSTools {
@@ -77,10 +77,10 @@ Configuration DC {
         #     Name   = 'RSAT-ADDS'
         # }
 
-        # WindowsFeature DNS {
-        #     Ensure = 'Present'
-        #     Name   = 'DNS'
-        # }
+        WindowsFeature DNS {
+            Ensure = 'Present'
+            Name   = 'DNS'
+        }
 
         # # Create the Active Directory domain
         # xADDomain DC {
