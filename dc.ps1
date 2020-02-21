@@ -107,7 +107,7 @@ Configuration DC {
         # xADDomain DC {
         MSFT_ADDomain DC {
             DomainName = $node.DomainFqdn
-            credential = &Credential
+            credential = $Credential
             # DomainNetbiosName = $node.DomainNetBIOS
             # DomainAdministratorCredential = $Credential
             SafemodeAdministratorPassword = $Credential
