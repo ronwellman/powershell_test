@@ -57,137 +57,138 @@ Configuration DC {
             Name = $Node.MachineName
         }
         
-        xDNSServerAddress SetDNS {
-            Address = $Node.DNSIP
-            InterfaceAlias = $Node.DNSClientInterfaceAlias
-            AddressFamily = 'IPv4'
-            DependsOn = '[WindowsFeature]DNS'
-        }
+        # xDNSServerAddress SetDNS {
+        #     Address = $Node.DNSIP
+        #     InterfaceAlias = $Node.DNSClientInterfaceAlias
+        #     AddressFamily = 'IPv4'
+        #     DependsOn = '[WindowsFeature]DNS'
+        # }
         
-        # Make sure AD DS is installed
-        WindowsFeature ADDSInstall {
-            Ensure = 'Present'
-            Name   = 'AD-Domain-Services'
-            DependsOn = '[WindowsFeature]DNS'
-        }
+        # # Make sure AD DS is installed
+        # WindowsFeature ADDSInstall {
+        #     Ensure = 'Present'
+        #     Name   = 'AD-Domain-Services'
+        #     DependsOn = '[WindowsFeature]DNS'
+        # }
 
-        # Make sure AD DS Tools are installed
-        WindowsFeature ADDSTools {
-            Ensure = 'Present'
-            Name   = 'RSAT-ADDS'
-        }
+        # # Make sure AD DS Tools are installed
+        # WindowsFeature ADDSTools {
+        #     Ensure = 'Present'
+        #     Name   = 'RSAT-ADDS'
+        # }
 
-        WindowsFeature DNS {
-            Ensure = 'Present'
-            Name   = 'DNS'
-        }
+        # WindowsFeature DNS {
+        #     Ensure = 'Present'
+        #     Name   = 'DNS'
+        # }
 
-        # Create the Active Directory domain
-        xADDomain DC {
-            DomainName = $node.DomainFqdn
-            DomainNetbiosName = $node.DomainNetBIOS
-            DomainAdministratorCredential = $Credential
-            SafemodeAdministratorPassword = $Credential
-            DependsOn = '[xComputer]SetName', '[WindowsFeature]ADDSInstall'
-        }
+        # # Create the Active Directory domain
+        # xADDomain DC {
+        #     DomainName = $node.DomainFqdn
+        #     DomainNetbiosName = $node.DomainNetBIOS
+        #     DomainAdministratorCredential = $Credential
+        #     SafemodeAdministratorPassword = $Credential
+        #     Credential = $Credential
+        #     DependsOn = '[xComputer]SetName', '[WindowsFeature]ADDSInstall'
+        # }
 
-        # Configure DNS Forwarders on this server
-        xDnsServerForwarder Forwarder {
-            IsSingleInstance = 'Yes'
-            IPAddresses = $node.DnsForwarders
-            DependsOn = '[xADDomain]DC', '[WindowsFeature]DNS'
-        }
+        # # Configure DNS Forwarders on this server
+        # xDnsServerForwarder Forwarder {
+        #     IsSingleInstance = 'Yes'
+        #     IPAddresses = $node.DnsForwarders
+        #     DependsOn = '[xADDomain]DC', '[WindowsFeature]DNS'
+        # }
 
-        # Create a DNS record for AD FS
-        xDnsRecord sts {
-            Name ='sts'
-            Zone = $node.DomainFqdn
-            Target = '192.168.1.50'
-            Type = 'ARecord'
-            Ensure = 'Present'
-            DependsOn = '[WindowsFeature]DNS'
-        }
+        # # Create a DNS record for AD FS
+        # xDnsRecord sts {
+        #     Name ='sts'
+        #     Zone = $node.DomainFqdn
+        #     Target = '192.168.1.50'
+        #     Type = 'ARecord'
+        #     Ensure = 'Present'
+        #     DependsOn = '[WindowsFeature]DNS'
+        # }
 
-        # Ensure the AD CS role is installed
-        WindowsFeature ADCS-Cert-Authority {
-            Ensure = 'Present'
-            Name = 'ADCS-Cert-Authority'
-        }
+        # # Ensure the AD CS role is installed
+        # WindowsFeature ADCS-Cert-Authority {
+        #     Ensure = 'Present'
+        #     Name = 'ADCS-Cert-Authority'
+        # }
 
-        # Ensure the AD CS RSAT is installed
-        WindowsFeature RSAT-ADCS {
-            Ensure = 'Present'
-            Name   = 'RSAT-ADCS'
-            IncludeAllSubFeature = $true
-        }
+        # # Ensure the AD CS RSAT is installed
+        # WindowsFeature RSAT-ADCS {
+        #     Ensure = 'Present'
+        #     Name   = 'RSAT-ADCS'
+        #     IncludeAllSubFeature = $true
+        # }
 
-        # Ensure the AD CS web enrollment role feature is installed
-        WindowsFeature ADCS-Web-Enrollment {
-            Ensure = 'Present'
-            Name   = 'ADCS-Web-Enrollment'
-            DependsOn = '[WindowsFeature]ADCS-Cert-Authority' 
-        }
+        # # Ensure the AD CS web enrollment role feature is installed
+        # WindowsFeature ADCS-Web-Enrollment {
+        #     Ensure = 'Present'
+        #     Name   = 'ADCS-Web-Enrollment'
+        #     DependsOn = '[WindowsFeature]ADCS-Cert-Authority' 
+        # }
 
-        # Ensure the IIS management console is installed for convenience
-        WindowsFeature Web-Mgmt-Console {
-            Ensure = 'Present'
-            Name   = 'Web-Mgmt-Console'
-        }
+        # # Ensure the IIS management console is installed for convenience
+        # WindowsFeature Web-Mgmt-Console {
+        #     Ensure = 'Present'
+        #     Name   = 'Web-Mgmt-Console'
+        # }
 
-        # Ensure the CA is configured
-        xAdcsCertificationAuthority CA {
-            Ensure            = 'Present'        
-            Credential        = $Credential
-            CAType            = 'EnterpriseRootCA'
-            CACommonName      = '$($node.DomainNetBIOS) Root CA'
-            HashAlgorithmName = 'SHA256'
-            DependsOn         = '[WindowsFeature]ADCS-Cert-Authority'
-        }
+        # # Ensure the CA is configured
+        # xAdcsCertificationAuthority CA {
+        #     Ensure            = 'Present'        
+        #     Credential        = $Credential
+        #     CAType            = 'EnterpriseRootCA'
+        #     CACommonName      = '$($node.DomainNetBIOS) Root CA'
+        #     HashAlgorithmName = 'SHA256'
+        #     DependsOn         = '[WindowsFeature]ADCS-Cert-Authority'
+        # }
 
-        # Ensure web enrollment is configured
-        xAdcsWebEnrollment CertSrv {
-            Ensure           = 'Present'
-            IsSingleInstance = 'Yes'
-            Credential       = $Credential
-            DependsOn        = '[WindowsFeature]ADCS-Web-Enrollment','[xAdcsCertificationAuthority]CA' 
-        }
+        # # Ensure web enrollment is configured
+        # xAdcsWebEnrollment CertSrv {
+        #     Ensure           = 'Present'
+        #     IsSingleInstance = 'Yes'
+        #     Credential       = $Credential
+        #     DependsOn        = '[WindowsFeature]ADCS-Web-Enrollment','[xAdcsCertificationAuthority]CA' 
+        # }
 
-        # Create a domain admin user for admin purposes
-        xADUser AdminUser {
-            Ensure     = 'Present'
-            DomainName = $node.DomainFqdn
-            Username   = $node.DomainAdminUser
-            Password   = $Credential
-            DisplayName = $node.DomainAdminUserDisplayName
-            DomainAdministratorCredential = $Credential
-            DependsOn = '[xADDomain]DC'
-        }
+        # # Create a domain admin user for admin purposes
+        # xADUser AdminUser {
+        #     Ensure     = 'Present'
+        #     DomainName = $node.DomainFqdn
+        #     Username   = $node.DomainAdminUser
+        #     Password   = $Credential
+        #     DisplayName = $node.DomainAdminUserDisplayName
+        #     DomainAdministratorCredential = $Credential
+        #     DependsOn = '[xADDomain]DC'
+        # }
 
-        # Put the domain admin user into the domain admins group (duh)
-        xADGroup DomainAdmins {
-            Ensure = 'Present'
-            GroupName = 'Domain Admins'
-            GroupScope = 'Global'
-            Category = 'Security'
-            MembersToInclude = $node.DomainAdminUser
-            Credential = $Credential
-            DependsOn = '[xADUser]AdminUser'
-        }
+        # # Put the domain admin user into the domain admins group (duh)
+        # xADGroup DomainAdmins {
+        #     Ensure = 'Present'
+        #     GroupName = 'Domain Admins'
+        #     GroupScope = 'Global'
+        #     Category = 'Security'
+        #     MembersToInclude = $node.DomainAdminUser
+        #     Credential = $Credential
+        #     DependsOn = '[xADUser]AdminUser'
+        # }
         
-        xADGroup EnterpriseAdmins {
-            Ensure = 'Present'
-            GroupName = 'Enterprise Admins'
-            GroupScope = 'Universal'
-            Category = 'Security'
-            MembersToInclude = $node.DomainAdminUser
-            Credential = $Credential
-            DependsOn = '[xAdUser]AdminUser'
-        }
+        # xADGroup EnterpriseAdmins {
+        #     Ensure = 'Present'
+        #     GroupName = 'Enterprise Admins'
+        #     GroupScope = 'Universal'
+        #     Category = 'Security'
+        #     MembersToInclude = $node.DomainAdminUser
+        #     Credential = $Credential
+        #     DependsOn = '[xAdUser]AdminUser'
+        # }
     }
 }
 
 Write-Output 'Generating MOF'
-DC -ConfigurationData $ConfigData -Credential $localCredential
+DC -ConfigurationData $ConfigData
 
 Write-Output 'Applying Configuration'
 Start-DscConfiguration -Wait -Force -Path .\DC -Verbose -Credential $localCredential
