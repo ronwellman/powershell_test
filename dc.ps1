@@ -23,7 +23,8 @@ $ConfigData = @{
 
 Write-Output "Defining Configuration"
 Configuration DC {
-
+    
+    Import-Module xComputerManagement, xNetworking, xDNSServer, xActiveDirectory, xAdcsDeployment
     Import-DscResource -ModuleName xComputerManagement -Name xComputer
     Import-DSCResource -ModuleName xNetworking -Name xDnsServerAddress
     Import-DSCResource -ModuleName xDNSServer -Name xDnsServerForwarder
@@ -54,18 +55,25 @@ Configuration DC {
             Address = $Node.DNSIP
             InterfaceAlias = $Node.DNSClientInterfaceAlias
             AddressFamily = "IPv4"
+            DependsOn = "[WindowsFeature]DNS"
         }
         
         # Make sure AD DS is installed
         WindowsFeature ADDSInstall {
             Ensure = 'Present'
             Name   = 'AD-Domain-Services'
+            DependsOn = '[WindowsFeature]DNS'
         }
 
         # Make sure AD DS Tools are installed
         WindowsFeature ADDSTools {
             Ensure = 'Present'
             Name   = 'RSAT-ADDS'
+        }
+
+        WindowsFeature DNS {
+            Ensure = 'Present'
+            Name   = 'DNS'
         }
 
         # Create the Active Directory domain
@@ -81,7 +89,7 @@ Configuration DC {
         xDnsServerForwarder Forwarder {
             IsSingleInstance = 'Yes'
             IPAddresses = $node.DnsForwarders
-            DependsOn = "[xADDomain]DC"
+            DependsOn = "[xADDomain]DC", "[WindowsFeature]DNS"
         }
 
         # Create a DNS record for AD FS
@@ -91,9 +99,10 @@ Configuration DC {
             Target = "192.168.1.50"
             Type = "ARecord"
             Ensure = "Present"
+            DependsOn = "[WindowsFeature]DNS"
         }
 
-        # E   nsure the AD CS role is installed
+        # Ensure the AD CS role is installed
         WindowsFeature ADCS-Cert-Authority {
             Ensure = 'Present'
             Name = 'ADCS-Cert-Authority'
@@ -138,12 +147,13 @@ Configuration DC {
         }
 
         # Create a domain admin user for admin purposes
-        xADUser adminUser {
+        xADUser AdminUser {
             Ensure     = 'Present'
             DomainName = $node.DomainFqdn
             Username   = $node.DomainAdminUser
             Password   = $Credential
             DisplayName = $node.DomainAdminUserDisplayName
+            DomainAdministratorCredential = $Credential
             DependsOn = '[xADDomain]DC'
         }
 
@@ -151,7 +161,21 @@ Configuration DC {
         xADGroup DomainAdmins {
             Ensure = 'Present'
             GroupName = 'Domain Admins'
+            GroupScope = 'Global'
+            Category = 'Security'
             MembersToInclude = $node.DomainAdminUser
+            Credential = $Credential
+            DependsOn = [xADUser]AdminUser
+        }
+        
+        xADGroup EnterpriseAdmins {
+            Ensure = 'Present'
+            GroupName = 'Enterprise Admins'
+            GroupScope = 'Universal'
+            Category = 'Security'
+            MembersToInclude = $node.DomainAdminUser
+            Credential = $Credential
+            DependsOn = [xAdUser]AdminUser
         }
     }
 }
