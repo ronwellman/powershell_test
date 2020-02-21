@@ -98,7 +98,7 @@ Configuration DC {
         xDnsServerForwarder Forwarder {
             IsSingleInstance = 'Yes'
             IPAddresses = $node.DnsForwarders
-            DependsOn = '[xADDomain]DC', '[WindowsFeature]DNS'
+            DependsOn = [WindowsFeature]DNS'
         }
 
         # Create a Zone for the domain
