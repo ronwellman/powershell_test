@@ -21,10 +21,16 @@ $ConfigData = @{
     })
 }
 
+$localCredential = New-Object System.Management.Automation.PSCredential(
+            'Administrator', (ConvertTo-SecureString $Node.Password -AsplainText -Force))
+
+
+
 Write-Output 'Defining Configuration'
 Configuration DC {
     
     Import-Module xComputerManagement, xNetworking, xDNSServer, xActiveDirectory, xAdcsDeployment
+    Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xComputerManagement -Name xComputer
     Import-DSCResource -ModuleName xNetworking -Name xDnsServerAddress
     Import-DSCResource -ModuleName xDNSServer -Name xDnsServerForwarder
@@ -184,4 +190,4 @@ Write-Output 'Generating MOF'
 DC -ConfigurationData $ConfigData
 
 Write-Output 'Applying Configuration'
-Start-DscConfiguration -Wait -Force -Path .\DC -Verbose
+Start-DscConfiguration -Wait -Force -Path .\DC -Verbose -Credential $localCredential
