@@ -105,7 +105,6 @@ Configuration DC {
         xDnsServerADZone adzone {
             Name = $node.DomainFqdn
             ReplicationScope = 'Domain'
-            Zone = $node.DomainFqdn
             DependsOn = '[WindowsFeature]DNS'
         }
 
