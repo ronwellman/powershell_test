@@ -187,7 +187,7 @@ Configuration DC {
 }
 
 Write-Output 'Generating MOF'
-DC -ConfigurationData $ConfigData
+DC -ConfigurationData $ConfigData -Credential $localCredential
 
 Write-Output 'Applying Configuration'
 Start-DscConfiguration -Wait -Force -Path .\DC -Verbose -Credential $localCredential
