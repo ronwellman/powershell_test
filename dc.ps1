@@ -65,6 +65,38 @@ Configuration DC {
             Credential = $localCredential
         }
         
+        # Make sure AD DS Tools are installed
+        WindowsFeature ADDSTools {
+            Ensure = 'Present'
+            Name   = 'RSAT-ADDS'
+        }
+
+        # Ensure the AD CS role is installed
+        WindowsFeature ADCS-Cert-Authority {
+            Ensure = 'Present'
+            Name = 'ADCS-Cert-Authority'
+        }
+
+        # Ensure the AD CS RSAT is installed
+        WindowsFeature RSAT-ADCS {
+            Ensure = 'Present'
+            Name   = 'RSAT-ADCS'
+            IncludeAllSubFeature = $true
+        }
+
+        # Ensure the AD CS web enrollment role feature is installed
+        WindowsFeature ADCS-Web-Enrollment {
+            Ensure = 'Present'
+            Name   = 'ADCS-Web-Enrollment'
+            DependsOn = '[WindowsFeature]ADCS-Cert-Authority' 
+        }
+
+        # Ensure the IIS management console is installed for convenience
+        WindowsFeature Web-Mgmt-Console {
+            Ensure = 'Present'
+            Name   = 'Web-Mgmt-Console'
+        }
+
         xDNSServerAddress SetDNS {
             Address = $Node.DNSIP
             InterfaceAlias = $Node.DNSClientInterfaceAlias
@@ -113,56 +145,24 @@ Configuration DC {
             SafemodeAdministratorPassword = $Credential
             DependsOn = '[xComputer]SetName', '[WindowsFeature]ADDSInstall'
         }
-        
-        # # Make sure AD DS Tools are installed
-        # WindowsFeature ADDSTools {
-        #     Ensure = 'Present'
-        #     Name   = 'RSAT-ADDS'
-        # }
 
-        # # Ensure the AD CS role is installed
-        # WindowsFeature ADCS-Cert-Authority {
-        #     Ensure = 'Present'
-        #     Name = 'ADCS-Cert-Authority'
-        # }
+        # Ensure the CA is configured
+        xAdcsCertificationAuthority CA {
+            Ensure            = 'Present'        
+            Credential        = $Credential
+            CAType            = 'EnterpriseRootCA'
+            CACommonName      = '$($node.DomainNetBIOS) Root CA'
+            HashAlgorithmName = 'SHA256'
+            DependsOn         = '[WindowsFeature]ADCS-Cert-Authority'
+        }
 
-        # # Ensure the AD CS RSAT is installed
-        # WindowsFeature RSAT-ADCS {
-        #     Ensure = 'Present'
-        #     Name   = 'RSAT-ADCS'
-        #     IncludeAllSubFeature = $true
-        # }
-
-        # # Ensure the AD CS web enrollment role feature is installed
-        # WindowsFeature ADCS-Web-Enrollment {
-        #     Ensure = 'Present'
-        #     Name   = 'ADCS-Web-Enrollment'
-        #     DependsOn = '[WindowsFeature]ADCS-Cert-Authority' 
-        # }
-
-        # # Ensure the IIS management console is installed for convenience
-        # WindowsFeature Web-Mgmt-Console {
-        #     Ensure = 'Present'
-        #     Name   = 'Web-Mgmt-Console'
-        # }
-
-        # # Ensure the CA is configured
-        # xAdcsCertificationAuthority CA {
-        #     Ensure            = 'Present'        
-        #     Credential        = $Credential
-        #     CAType            = 'EnterpriseRootCA'
-        #     CACommonName      = '$($node.DomainNetBIOS) Root CA'
-        #     HashAlgorithmName = 'SHA256'
-        #     DependsOn         = '[WindowsFeature]ADCS-Cert-Authority'
-        # }
-
-        # # Ensure web enrollment is configured
-        # xAdcsWebEnrollment CertSrv {
-        #     Ensure           = 'Present'
-        #     IsSingleInstance = 'Yes'
-        #     Credential       = $Credential
-        #     DependsOn        = '[WindowsFeature]ADCS-Web-Enrollment','[xAdcsCertificationAuthority]CA' 
-        # }
+        # Ensure web enrollment is configured
+        xAdcsWebEnrollment CertSrv {
+            Ensure           = 'Present'
+            IsSingleInstance = 'Yes'
+            Credential       = $Credential
+            DependsOn        = '[WindowsFeature]ADCS-Web-Enrollment', '[xAdcsCertificationAuthority]CA' 
+        }
 
         # # Create a domain admin user for admin purposes
         # xADUser AdminUser {
