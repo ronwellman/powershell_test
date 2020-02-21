@@ -115,7 +115,7 @@ Configuration DC {
             Target = $Node.DNSIP
             Type = 'ARecord'
             Ensure = 'Present'
-            DependsOn = '[WindowsFeature]DNS', '[xDnsServerADZone]primaryZone'
+            DependsOn = '[WindowsFeature]DNS', '[xDnsServerPrimaryZone]primaryZone'
         }
 
         # # Ensure the AD CS role is installed
