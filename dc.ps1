@@ -57,12 +57,12 @@ Configuration DC {
             Name = $Node.MachineName
         }
         
-        # xDNSServerAddress SetDNS {
-        #     Address = $Node.DNSIP
-        #     InterfaceAlias = $Node.DNSClientInterfaceAlias
-        #     AddressFamily = 'IPv4'
-        #     DependsOn = '[WindowsFeature]DNS'
-        # }
+        xDNSServerAddress SetDNS {
+            Address = $Node.DNSIP
+            InterfaceAlias = $Node.DNSClientInterfaceAlias
+            AddressFamily = 'IPv4'
+            DependsOn = '[WindowsFeature]DNS'
+        }
         
         # Make sure AD DS is installed
         # WindowsFeature ADDSInstall {
@@ -101,14 +101,14 @@ Configuration DC {
         # }
 
         # # Create a DNS record for AD FS
-        # xDnsRecord sts {
-        #     Name ='sts'
-        #     Zone = $node.DomainFqdn
-        #     Target = '192.168.1.50'
-        #     Type = 'ARecord'
-        #     Ensure = 'Present'
-        #     DependsOn = '[WindowsFeature]DNS'
-        # }
+        xDnsRecord sts {
+            Name ='sts'
+            Zone = $node.DomainFqdn
+            Target = $Node.DNSIP
+            Type = 'ARecord'
+            Ensure = 'Present'
+            DependsOn = '[WindowsFeature]DNS'
+        }
 
         # # Ensure the AD CS role is installed
         # WindowsFeature ADCS-Cert-Authority {
