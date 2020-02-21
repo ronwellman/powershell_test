@@ -58,6 +58,12 @@ Configuration DC {
             Name = $Node.MachineName
         }
         
+        WindowsFeature DNS {
+            Ensure = 'Present'
+            Name   = 'DNS'
+            Credential = $localCredential
+        }
+        
         xDNSServerAddress SetDNS {
             Address = $Node.DNSIP
             InterfaceAlias = $Node.DNSClientInterfaceAlias
@@ -65,25 +71,37 @@ Configuration DC {
             DependsOn = '[WindowsFeature]DNS'
         }
         
+        # Configure DNS Forwarders on this server
+        xDnsServerForwarder Forwarder {
+            IsSingleInstance = 'Yes'
+            IPAddresses = $node.DnsForwarders
+            DependsOn = '[WindowsFeature]DNS'
+        }
+        
+        # Create a Zone for the domain
+        xDnsServerPrimaryZone primaryZone {
+            Name = $node.DomainFqdn
+            Ensure = 'Present'
+            DependsOn = '[WindowsFeature]DNS'
+        }
+
+        # # Create a DNS record for AD FS
+        # xDnsRecord dc {
+        #     Name ='dc'
+        #     Zone = $node.DomainFqdn
+        #     Target = $Node.DNSIP
+        #     Type = 'ARecord'
+        #     Ensure = 'Present'
+        #     DependsOn = '[WindowsFeature]DNS', '[xDnsServerPrimaryZone]primaryZone'
+        # }
+
         # Make sure AD DS is installed
         WindowsFeature ADDSInstall {
             Ensure = 'Present'
             Name   = 'AD-Domain-Services'
             DependsOn = '[WindowsFeature]DNS'
         }
-
-        # # Make sure AD DS Tools are installed
-        # WindowsFeature ADDSTools {
-        #     Ensure = 'Present'
-        #     Name   = 'RSAT-ADDS'
-        # }
-
-        WindowsFeature DNS {
-            Ensure = 'Present'
-            Name   = 'DNS'
-            Credential = $localCredential
-        }
-
+        
         # Create the Active Directory domain
         xADDomain DC {
             DomainName = $node.DomainFqdn
@@ -92,30 +110,12 @@ Configuration DC {
             SafemodeAdministratorPassword = $Credential
             DependsOn = '[xComputer]SetName', '[WindowsFeature]ADDSInstall'
         }
-
-        # Configure DNS Forwarders on this server
-        xDnsServerForwarder Forwarder {
-            IsSingleInstance = 'Yes'
-            IPAddresses = $node.DnsForwarders
-            DependsOn = '[WindowsFeature]DNS'
-        }
-
-        # Create a Zone for the domain
-        xDnsServerPrimaryZone primaryZone {
-            Name = $node.DomainFqdn
-            Ensure = 'Present'
-            DependsOn = '[WindowsFeature]DNS'
-        }
-
-        # Create a DNS record for AD FS
-        xDnsRecord dc {
-            Name ='dc'
-            Zone = $node.DomainFqdn
-            Target = $Node.DNSIP
-            Type = 'ARecord'
-            Ensure = 'Present'
-            DependsOn = '[WindowsFeature]DNS', '[xDnsServerPrimaryZone]primaryZone'
-        }
+        
+        # # Make sure AD DS Tools are installed
+        # WindowsFeature ADDSTools {
+        #     Ensure = 'Present'
+        #     Name   = 'RSAT-ADDS'
+        # }
 
         # # Ensure the AD CS role is installed
         # WindowsFeature ADCS-Cert-Authority {
