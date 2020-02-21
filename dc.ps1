@@ -26,6 +26,7 @@ Configuration DC {
 
     Import-DscResource -ModuleName xComputerManagement -Name xComputer
     Import-DSCResource -ModuleName xNetworking -Name xDnsServerAddress
+    Import-DSCResource -ModuleName xDNSServer -Name xDnsServerForwarder
     Import-DSCResource -ModuleName xDNSServer -Name xDnsRecord
     Import-DSCResource -ModuleName xActiveDirectory -Name xADDomain
     Import-DSCResource -ModuleName xActiveDirectory -Name xADUser
