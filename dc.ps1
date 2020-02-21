@@ -2,10 +2,10 @@ param ($ComputerName, $DomainFqdn, $DomainNetBIOS, $Password, $DomainAdminUser, 
 
 Start-Transcript c:\ConfigurationLog.txt
 
-Write-Output "Creating ConfigData"
+Write-Output 'Creating ConfigData'
 $ConfigData = @{
     AllNodes = @(@{
-        NodeName = "localhost"
+        NodeName = 'localhost'
         MachineName = $ComputerName
         DomainFqdn = $DomainFqdn
         DomainNetbios = $DomainNetBIOS
@@ -21,7 +21,7 @@ $ConfigData = @{
     })
 }
 
-Write-Output "Defining Configuration"
+Write-Output 'Defining Configuration'
 Configuration DC {
     
     Import-Module xComputerManagement, xNetworking, xDNSServer, xActiveDirectory, xAdcsDeployment
@@ -37,13 +37,13 @@ Configuration DC {
 
     Node $AllNodes.NodeName {
         LocalConfigurationManager {
-            ActionAfterReboot = "ContinueConfiguration"
-            ConfigurationMode = "ApplyAndAutoCorrect"
+            ActionAfterReboot = 'ContinueConfiguration'
+            ConfigurationMode = 'ApplyAndAutoCorrect'
             RebootNodeIfNeeded = $true
         }
 
         $Credential = New-Object System.Management.Automation.PSCredential(
-            "$($Node.DomainFqdn)\Administrator",
+            '$($Node.DomainFqdn)\Administrator',
             (ConvertTo-SecureString $Node.Password -AsplainText -Force)
         )
 
@@ -54,8 +54,8 @@ Configuration DC {
         xDNSServerAddress SetDNS {
             Address = $Node.DNSIP
             InterfaceAlias = $Node.DNSClientInterfaceAlias
-            AddressFamily = "IPv4"
-            DependsOn = "[WindowsFeature]DNS"
+            AddressFamily = 'IPv4'
+            DependsOn = '[WindowsFeature]DNS'
         }
         
         # Make sure AD DS is installed
@@ -89,17 +89,17 @@ Configuration DC {
         xDnsServerForwarder Forwarder {
             IsSingleInstance = 'Yes'
             IPAddresses = $node.DnsForwarders
-            DependsOn = "[xADDomain]DC", "[WindowsFeature]DNS"
+            DependsOn = '[xADDomain]DC', '[WindowsFeature]DNS'
         }
 
         # Create a DNS record for AD FS
         xDnsRecord sts {
             Name ='sts'
             Zone = $node.DomainFqdn
-            Target = "192.168.1.50"
-            Type = "ARecord"
-            Ensure = "Present"
-            DependsOn = "[WindowsFeature]DNS"
+            Target = '192.168.1.50'
+            Type = 'ARecord'
+            Ensure = 'Present'
+            DependsOn = '[WindowsFeature]DNS'
         }
 
         # Ensure the AD CS role is installed
@@ -133,7 +133,7 @@ Configuration DC {
             Ensure            = 'Present'        
             Credential        = $Credential
             CAType            = 'EnterpriseRootCA'
-            CACommonName      = "$($node.DomainNetBIOS) Root CA"
+            CACommonName      = '$($node.DomainNetBIOS) Root CA'
             HashAlgorithmName = 'SHA256'
             DependsOn         = '[WindowsFeature]ADCS-Cert-Authority'
         }
@@ -165,7 +165,7 @@ Configuration DC {
             Category = 'Security'
             MembersToInclude = $node.DomainAdminUser
             Credential = $Credential
-            DependsOn = [xADUser]AdminUser
+            DependsOn = '[xADUser]AdminUser'
         }
         
         xADGroup EnterpriseAdmins {
@@ -175,13 +175,13 @@ Configuration DC {
             Category = 'Security'
             MembersToInclude = $node.DomainAdminUser
             Credential = $Credential
-            DependsOn = [xAdUser]AdminUser
+            DependsOn = '[xAdUser]AdminUser'
         }
     }
 }
 
-Write-Output "Generating MOF"
+Write-Output 'Generating MOF'
 DC -ConfigurationData $ConfigData
 
-Write-Output "Applying Configuration"
+Write-Output 'Applying Configuration'
 Start-DscConfiguration -Wait -Force -Path .\DC -Verbose
