@@ -84,15 +84,15 @@ Configuration DC {
             Credential = $localCredential
         }
 
-        # # Create the Active Directory domain
-        # xADDomain DC {
-        #     DomainName = $node.DomainFqdn
-        #     DomainNetbiosName = $node.DomainNetBIOS
-        #     DomainAdministratorCredential = $Credential
-        #     SafemodeAdministratorPassword = $Credential
-        #     Credential = $Credential
-        #     DependsOn = '[xComputer]SetName', '[WindowsFeature]ADDSInstall'
-        # }
+        # Create the Active Directory domain
+        xADDomain DC {
+            DomainName = $node.DomainFqdn
+            DomainNetbiosName = $node.DomainNetBIOS
+            DomainAdministratorCredential = $Credential
+            SafemodeAdministratorPassword = $Credential
+            Credential = $Credential
+            DependsOn = '[xComputer]SetName', '[WindowsFeature]ADDSInstall'
+        }
 
         # Configure DNS Forwarders on this server
         xDnsServerForwarder Forwarder {
