@@ -66,11 +66,11 @@ Configuration DC {
         }
         
         # Make sure AD DS is installed
-        # WindowsFeature ADDSInstall {
-        #     Ensure = 'Present'
-        #     Name   = 'AD-Domain-Services'
-        #     DependsOn = '[WindowsFeature]DNS'
-        # }
+        WindowsFeature ADDSInstall {
+            Ensure = 'Present'
+            Name   = 'AD-Domain-Services'
+            DependsOn = '[WindowsFeature]DNS'
+        }
 
         # # Make sure AD DS Tools are installed
         # WindowsFeature ADDSTools {
@@ -94,12 +94,12 @@ Configuration DC {
         #     DependsOn = '[xComputer]SetName', '[WindowsFeature]ADDSInstall'
         # }
 
-        # # Configure DNS Forwarders on this server
-        # xDnsServerForwarder Forwarder {
-        #     IsSingleInstance = 'Yes'
-        #     IPAddresses = $node.DnsForwarders
-        #     DependsOn = '[xADDomain]DC', '[WindowsFeature]DNS'
-        # }
+        # Configure DNS Forwarders on this server
+        xDnsServerForwarder Forwarder {
+            IsSingleInstance = 'Yes'
+            IPAddresses = $node.DnsForwarders
+            DependsOn = '[xADDomain]DC', '[WindowsFeature]DNS'
+        }
 
         # Create a Zone for the domain
         xDnsServerPrimaryZone primaryZone {
