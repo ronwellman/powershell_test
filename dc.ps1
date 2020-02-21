@@ -37,7 +37,7 @@ Configuration DC {
     Import-DSCResource -ModuleName xDNSServer -Name xDnsRecord
     Import-DscResource -ModuleName xDNSServer -Name xDnsServerPrimaryZone
     # Import-DSCResource -ModuleName xActiveDirectory -Name xADDomain
-    Import-DSCResource -ModuleName ActiveDirectoryDsc -Name MSFT_ADDomain
+    Import-DSCResource -ModuleName ActiveDirectoryDsc -Name ADDomain
     Import-DSCResource -ModuleName xActiveDirectory -Name xADUser
     Import-DSCResource -ModuleName xActiveDirectory -Name xADGroup
     Import-DSCResource -ModuleName xAdcsDeployment -Name xAdcsWebEnrollment
@@ -105,7 +105,7 @@ Configuration DC {
         
         # Create the Active Directory domain
         # xADDomain DC {
-        MSFT_ADDomain DC {
+        ADDomain DC {
             DomainName = $node.DomainFqdn
             credential = $Credential
             # DomainNetbiosName = $node.DomainNetBIOS
