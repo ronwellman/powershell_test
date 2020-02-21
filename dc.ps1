@@ -29,14 +29,15 @@ $localCredential = New-Object System.Management.Automation.PSCredential(
 Write-Output 'Defining Configuration'
 Configuration DC {
     
-    Import-Module xComputerManagement, xNetworking, xDNSServer, xActiveDirectory, xAdcsDeployment
+    Import-Module xComputerManagement, xNetworking, xDNSServer, xActiveDirectory, xAdcsDeployment, ActiveDirectoryDsc
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xComputerManagement -Name xComputer
     Import-DSCResource -ModuleName xNetworking -Name xDnsServerAddress
     Import-DSCResource -ModuleName xDNSServer -Name xDnsServerForwarder
     Import-DSCResource -ModuleName xDNSServer -Name xDnsRecord
     Import-DscResource -ModuleName xDNSServer -Name xDnsServerPrimaryZone
-    Import-DSCResource -ModuleName xActiveDirectory -Name xADDomain
+    # Import-DSCResource -ModuleName xActiveDirectory -Name xADDomain
+    Import-DSCResource -ModuleName ActiveDirectoryDsc -Name MSFT_ADDomain
     Import-DSCResource -ModuleName xActiveDirectory -Name xADUser
     Import-DSCResource -ModuleName xActiveDirectory -Name xADGroup
     Import-DSCResource -ModuleName xAdcsDeployment -Name xAdcsWebEnrollment
@@ -103,10 +104,12 @@ Configuration DC {
         }
         
         # Create the Active Directory domain
-        xADDomain DC {
+        # xADDomain DC {
+        MSFT_ADDomain DC {
             DomainName = $node.DomainFqdn
-            DomainNetbiosName = $node.DomainNetBIOS
-            DomainAdministratorCredential = $Credential
+            credential = &Credential
+            # DomainNetbiosName = $node.DomainNetBIOS
+            # DomainAdministratorCredential = $Credential
             SafemodeAdministratorPassword = $Credential
             DependsOn = '[xComputer]SetName', '[WindowsFeature]ADDSInstall'
         }

@@ -10,6 +10,6 @@ Write-Output "Setting PSRepository"
 Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 
 Write-Output "Installing Modules"
-Install-Module xActiveDirectory, xComputerManagement, xNetworking, xAdcsDeployment, xDnsServer, xSystemSecurity -confirm:$false -Scope AllUsers -Force
+Install-Module xActiveDirectory, xComputerManagement, xNetworking, xAdcsDeployment, xDnsServer, xSystemSecurity, ActiveDirectoryDsc -confirm:$false -Scope AllUsers -Force
 
 Stop-Transcript
