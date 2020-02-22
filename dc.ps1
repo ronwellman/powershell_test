@@ -124,12 +124,9 @@ Configuration DC {
         }
         
         # Create the Active Directory domain
-        # xADDomain DC {
         ADDomain DC {
             DomainName = $node.DomainFqdn
             credential = $Credential
-            # DomainNetbiosName = $node.DomainNetBIOS
-            # DomainAdministratorCredential = $Credential
             SafemodeAdministratorPassword = $Credential
             DependsOn = '[xComputer]SetName', '[WindowsFeature]ADDSInstall'
         }
@@ -154,12 +151,12 @@ Configuration DC {
 
         # Create a domain admin user for admin purposes
         ADUser AdminUser {
-            Ensure     = 'Present'
-            DomainName = $node.DomainFqdn
             UserName   = $node.DomainAdminUser
             Password   = $Credential
-            DisplayName = $node.DomainAdminUserDisplayName
             Credential = $Credential
+            DomainName = $node.DomainFqdn
+            Ensure     = 'Present'
+            DisplayName = $node.DomainAdminUserDisplayName
             DependsOn = '[ADDomain]DC'
         }
 
