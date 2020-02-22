@@ -151,7 +151,8 @@ Configuration DC {
 
         # Create a domain admin user for admin purposes
         ADUser AdminUser {
-            UserName   = $node.DomainAdminUser
+            UserName   = 'MyAdminUser'
+            #UserName   = $node.DomainAdminUser
             Password   = $Credential
             Credential = $Credential
             DomainName = $node.DomainFqdn
