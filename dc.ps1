@@ -152,16 +152,16 @@ Configuration DC {
             DependsOn        = '[WindowsFeature]ADCS-Web-Enrollment', '[xAdcsCertificationAuthority]CA' 
         }
 
-        # # Create a domain admin user for admin purposes
-        # xADUser AdminUser {
-        #     Ensure     = 'Present'
-        #     DomainName = $node.DomainFqdn
-        #     Username   = $node.DomainAdminUser
-        #     Password   = $Credential
-        #     DisplayName = $node.DomainAdminUserDisplayName
-        #     DomainAdministratorCredential = $Credential
-        #     DependsOn = '[xADDomain]DC'
-        # }
+        # Create a domain admin user for admin purposes
+        xADUser AdminUser {
+            Ensure     = 'Present'
+            DomainName = $node.DomainFqdn
+            Username   = $node.DomainAdminUser
+            Password   = $Credential
+            DisplayName = $node.DomainAdminUserDisplayName
+            DomainAdministratorCredential = $Credential
+            DependsOn = '[xADDomain]DC'
+        }
 
         # # Put the domain admin user into the domain admins group (duh)
         # xADGroup DomainAdmins {
