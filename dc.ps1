@@ -69,6 +69,7 @@ Configuration DC {
         WindowsFeature ADCS-Cert-Authority {
             Ensure = 'Present'
             Name = 'ADCS-Cert-Authority'
+            DependsOn = '[ADDomain]DC'
         }
 
         # Ensure the AD CS web enrollment role feature is installed
@@ -78,11 +79,11 @@ Configuration DC {
             DependsOn = '[WindowsFeature]ADCS-Cert-Authority' 
         }
 
-        # Ensure the IIS management console is installed for convenience
-        WindowsFeature Web-Mgmt-Console {
-            Ensure = 'Present'
-            Name   = 'Web-Mgmt-Console'
-        }
+        # # Ensure the IIS management console is installed for convenience
+        # WindowsFeature Web-Mgmt-Console {
+        #     Ensure = 'Present'
+        #     Name   = 'Web-Mgmt-Console'
+        # }
 
         xDNSServerAddress SetDNS {
             Address = $Node.DNSIP
