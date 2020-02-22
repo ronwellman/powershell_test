@@ -160,7 +160,7 @@ Configuration DC {
             Password   = $Credential
             DisplayName = $node.DomainAdminUserDisplayName
             Credential = $Credential
-            DependsOn = '[xADDomain]DC'
+            DependsOn = '[ADDomain]DC'
         }
 
         # # Put the domain admin user into the domain admins group (duh)
