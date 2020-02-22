@@ -38,7 +38,7 @@ Configuration DC {
     Import-DscResource -ModuleName xDNSServer -Name xDnsServerPrimaryZone
     # Import-DSCResource -ModuleName xActiveDirectory -Name xADDomain
     Import-DSCResource -ModuleName ActiveDirectoryDsc -Name ADDomain
-    Import-DSCResource -ModuleName xActiveDirectory -Name xADUser
+    Import-DSCResource -ModuleName ActiveDirectoryDsc -Name ADUser
     Import-DSCResource -ModuleName xActiveDirectory -Name xADGroup
     Import-DSCResource -ModuleName xAdcsDeployment -Name xAdcsWebEnrollment
     Import-DSCResource -ModuleName xAdcsDeployment -Name xAdcsCertificationAuthority
@@ -153,13 +153,13 @@ Configuration DC {
         }
 
         # Create a domain admin user for admin purposes
-        xADUser AdminUser {
+        ADUser AdminUser {
             Ensure     = 'Present'
             DomainName = $node.DomainFqdn
             Username   = $node.DomainAdminUser
             Password   = $Credential
             DisplayName = $node.DomainAdminUserDisplayName
-            DomainAdministratorCredential = $Credential
+            Credential = $Credential
             DependsOn = '[xADDomain]DC'
         }
 
