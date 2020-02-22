@@ -156,7 +156,7 @@ Configuration DC {
         ADUser AdminUser {
             Ensure     = 'Present'
             DomainName = $node.DomainFqdn
-            Username   = $node.DomainAdminUser
+            UserName   = $node.DomainAdminUser
             Password   = $Credential
             DisplayName = $node.DomainAdminUserDisplayName
             Credential = $Credential
