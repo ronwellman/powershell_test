@@ -64,24 +64,11 @@ Configuration DC {
             Name   = 'DNS'
             Credential = $localCredential
         }
-        
-        # Make sure AD DS Tools are installed
-        WindowsFeature ADDSTools {
-            Ensure = 'Present'
-            Name   = 'RSAT-ADDS'
-        }
 
         # Ensure the AD CS role is installed
         WindowsFeature ADCS-Cert-Authority {
             Ensure = 'Present'
             Name = 'ADCS-Cert-Authority'
-        }
-
-        # Ensure the AD CS RSAT is installed
-        WindowsFeature RSAT-ADCS {
-            Ensure = 'Present'
-            Name   = 'RSAT-ADCS'
-            IncludeAllSubFeature = $true
         }
 
         # Ensure the AD CS web enrollment role feature is installed
