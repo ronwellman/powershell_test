@@ -36,7 +36,6 @@ Configuration DC {
     Import-DSCResource -ModuleName xDNSServer -Name xDnsServerForwarder
     Import-DSCResource -ModuleName xDNSServer -Name xDnsRecord
     Import-DscResource -ModuleName xDNSServer -Name xDnsServerPrimaryZone
-    # Import-DSCResource -ModuleName xActiveDirectory -Name xADDomain
     Import-DSCResource -ModuleName ActiveDirectoryDsc -Name ADDomain
     Import-DSCResource -ModuleName ActiveDirectoryDsc -Name ADUser
     Import-DSCResource -ModuleName xActiveDirectory -Name xADGroup
@@ -151,8 +150,7 @@ Configuration DC {
 
         # Create a domain admin user for admin purposes
         ADUser AdminUser {
-            UserName   = 'MyAdminUser'
-            #UserName   = $node.DomainAdminUser
+            UserName   = $node.DomainAdminUser
             Password   = $Credential
             Credential = $Credential
             DomainName = $node.DomainFqdn
